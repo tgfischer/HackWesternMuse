@@ -32,12 +32,55 @@ import com.interaxon.libmuse.MuseVersion;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.LinkedList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Created by Tom on 2015-03-28.
  */
 public class ConnectionsFragment extends Fragment implements View.OnClickListener {
     View rootView;
+    double tp9_avg = 0.0, fp1_avg = 0.0, fp2_avg = 0.0, tp10_avg = 0.0, tp9_count = 0.0, fp1_count = 0.0, fp2_count = 0.0, tp10_count = 0.0;
+    LinkedList<Double> tp9_dataHolder = new LinkedList<Double>();
+    LinkedList<Double> fp1_dataHolder = new LinkedList<Double>();
+    LinkedList<Double> fp2_dataHolder = new LinkedList<Double>();
+    LinkedList<Double> tp10_dataHolder = new LinkedList<Double>();
+    int samples = 0;
+    Timer timer = new Timer();
+
+    class dataAnalysis extends TimerTask {
+        public void run() {
+            //tp9_dataHolder.clear();
+            double tp9_variance = computeVariance(tp9_dataHolder, tp9_avg);
+            System.out.println("tp9: " + Math.sqrt(tp9_variance));
+            tp9_dataHolder.clear();
+
+            double fp1_variance = computeVariance(fp1_dataHolder, fp1_avg);
+            System.out.println("fp1: " + Math.sqrt(fp1_variance));
+            fp1_dataHolder.clear();
+
+            double fp2_variance = computeVariance(fp2_dataHolder, fp2_avg);
+            System.out.println("fp2: " + Math.sqrt(fp2_variance));
+            fp2_dataHolder.clear();
+
+            double tp10_variance = computeVariance(tp10_dataHolder, tp10_avg);
+            System.out.println("tp10: " + Math.sqrt(tp10_variance));
+            tp10_dataHolder.clear();
+
+            timer.schedule(new dataAnalysis(), 1000);
+        }
+
+        public double computeVariance(LinkedList<Double> data, Double average) {
+            double sumsq = 0.0;
+            for (int i = 0; i < data.size(); i++) {
+                sumsq += ((average-data.get(i))*(average-data.get(i)));
+            }
+            return sumsq/(data.size()-1);
+        }
+    }
+
+
 
     class ConnectionListener extends MuseConnectionListener {
 
@@ -146,6 +189,39 @@ public class ConnectionsFragment extends Fragment implements View.OnClickListene
         private void updateEeg(final ArrayList<Double> data) {
             getView().post(new Runnable() {
                 public void run() {
+                    samples++;
+                    //if (samples % 22 == 0) {
+
+                    TextView tp9 = (TextView) getView().findViewById(R.id.eeg_tp9);
+                    tp9_count += data.get(Eeg.TP9.ordinal());
+                    tp9_avg = tp9_count / samples;
+                    //System.out.println("AVG: " + tp9_avg + "");
+                    tp9_dataHolder.add(data.get(Eeg.TP9.ordinal()));
+
+                    TextView fp1 = (TextView) getView().findViewById(R.id.eeg_fp1);
+                    fp1_count += data.get(Eeg.FP1.ordinal());
+                    fp1_avg = fp1_count / samples;
+                    fp1_dataHolder.add(data.get(Eeg.FP1.ordinal()));
+
+                    TextView fp2 = (TextView) getView().findViewById(R.id.eeg_fp2);
+                    fp2_count += data.get(Eeg.FP2.ordinal());
+                    fp2_avg = fp2_count / samples;
+                    fp2_dataHolder.add(data.get(Eeg.FP2.ordinal()));
+
+                    TextView tp10 = (TextView) getView().findViewById(R.id.eeg_tp10);
+                    tp10_count += data.get(Eeg.TP10.ordinal());
+                    tp10_avg = tp10_count / samples;
+                    tp10_dataHolder.add(data.get(Eeg.TP10.ordinal()));
+
+                    tp9.setText(String.format(
+                            "%6.2f", data.get(Eeg.TP9.ordinal())));
+                    fp1.setText(String.format(
+                            "%6.2f", data.get(Eeg.FP1.ordinal())));
+                    fp2.setText(String.format(
+                            "%6.2f", data.get(Eeg.FP2.ordinal())));
+                    tp10.setText(String.format(
+                            "%6.2f", data.get(Eeg.TP10.ordinal())));
+                    /*
                     TextView tp9 = (TextView) getView().findViewById(R.id.eeg_tp9);
                     TextView fp1 = (TextView) getView().findViewById(R.id.eeg_fp1);
                     TextView fp2 = (TextView) getView().findViewById(R.id.eeg_fp2);
@@ -158,6 +234,7 @@ public class ConnectionsFragment extends Fragment implements View.OnClickListene
                             "%6.2f", data.get(Eeg.FP2.ordinal())));
                     tp10.setText(String.format(
                             "%6.2f", data.get(Eeg.TP10.ordinal())));
+                    */
                 }
             });
         }
@@ -196,6 +273,7 @@ public class ConnectionsFragment extends Fragment implements View.OnClickListene
         WeakReference<Activity> weakActivity = new WeakReference<Activity>(this.getActivity());
         connectionListener = new ConnectionListener(weakActivity);
         dataListener = new DataListener(weakActivity);
+        timer.schedule(new dataAnalysis(),1000);
     }
 
     @Nullable
