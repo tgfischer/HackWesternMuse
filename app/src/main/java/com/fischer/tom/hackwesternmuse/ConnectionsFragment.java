@@ -124,9 +124,9 @@ public class ConnectionsFragment extends Fragment implements View.OnClickListene
         }
 
         private void updateAccelerometer(final ArrayList<Double> data) {
-            Activity activity = activityRef.get();
+            /*Activity activity = activityRef.get();
             if (activity != null) {
-                /*activity.runOnUiThread(new Runnable() {
+                activity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         TextView acc_x = (TextView) findViewById(R.id.acc_x);
@@ -139,37 +139,33 @@ public class ConnectionsFragment extends Fragment implements View.OnClickListene
                         acc_z.setText(String.format(
                             "%6.2f", data.get(Accelerometer.LEFT_RIGHT.ordinal())));
                     }
-                });*/
-            }
+                });
+            }*/
         }
 
         private void updateEeg(final ArrayList<Double> data) {
-            Activity activity = activityRef.get();
-            if (activity != null) {
-                activity.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        TextView tp9 = (TextView) getView().findViewById(R.id.eeg_tp9);
-                        TextView fp1 = (TextView) getView().findViewById(R.id.eeg_fp1);
-                        TextView fp2 = (TextView) getView().findViewById(R.id.eeg_fp2);
-                        TextView tp10 = (TextView) getView().findViewById(R.id.eeg_tp10);
-                        tp9.setText(String.format(
-                                "%6.2f", data.get(Eeg.TP9.ordinal())));
-                        fp1.setText(String.format(
-                                "%6.2f", data.get(Eeg.FP1.ordinal())));
-                        fp2.setText(String.format(
-                                "%6.2f", data.get(Eeg.FP2.ordinal())));
-                        tp10.setText(String.format(
-                                "%6.2f", data.get(Eeg.TP10.ordinal())));
-                    }
-                });
-            }
+            getView().post(new Runnable() {
+                public void run() {
+                    TextView tp9 = (TextView) getView().findViewById(R.id.eeg_tp9);
+                    TextView fp1 = (TextView) getView().findViewById(R.id.eeg_fp1);
+                    TextView fp2 = (TextView) getView().findViewById(R.id.eeg_fp2);
+                    TextView tp10 = (TextView) getView().findViewById(R.id.eeg_tp10);
+                    tp9.setText(String.format(
+                            "%6.2f", data.get(Eeg.TP9.ordinal())));
+                    fp1.setText(String.format(
+                            "%6.2f", data.get(Eeg.FP1.ordinal())));
+                    fp2.setText(String.format(
+                            "%6.2f", data.get(Eeg.FP2.ordinal())));
+                    tp10.setText(String.format(
+                            "%6.2f", data.get(Eeg.TP10.ordinal())));
+                }
+            });
         }
 
         private void updateAlphaRelative(final ArrayList<Double> data) {
-            Activity activity = activityRef.get();
+            /*Activity activity = activityRef.get();
             if (activity != null) {
-                /*activity.runOnUiThread(new Runnable() {
+                activity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                          TextView elem1 = (TextView) findViewById(R.id.elem1);
@@ -185,8 +181,8 @@ public class ConnectionsFragment extends Fragment implements View.OnClickListene
                          elem4.setText(String.format(
                             "%6.2f", data.get(Eeg.TP10.ordinal())));
                     }
-                });*/
-            }
+                });
+            }*/
         }
     }
 
