@@ -2,6 +2,8 @@ package com.fischer.tom.hackwesternmuse;
 
 import android.accounts.AccountManager;
 import android.accounts.Account;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.telephony.SmsManager;
 
 import android.app.Activity;
@@ -39,12 +41,15 @@ import java.util.List;
 import java.util.LinkedList;
 import java.util.Timer;
 import java.util.TimerTask;
+import android.database.sqlite.SQLiteDatabase;
+
 
 /**
  * Created by Tom on 2015-03-28.
  */
 public class ConnectionsFragment extends Fragment implements View.OnClickListener {
     View rootView;
+    private DBAdapter dBAdapter;
     double tp9_avg = 0.0, fp1_avg = 0.0, fp2_avg = 0.0, tp10_avg = 0.0, tp9_count = 0.0, fp1_count = 0.0, fp2_count = 0.0, tp10_count = 0.0;
     LinkedList<Double> tp9_dataHolder = new LinkedList<Double>();
     LinkedList<Double> fp1_dataHolder = new LinkedList<Double>();
@@ -138,16 +143,19 @@ public class ConnectionsFragment extends Fragment implements View.OnClickListene
                 System.out.println("caution tp10: " + tp10_stdDev);
             }
 
-
             if (tp9_stdDev > 300.0 || fp1_stdDev > 300.0 || fp2_stdDev > 300.0 || tp10_stdDev > 300.0) {
                 // our testing threshold is 50
                 caution_mode = false;
                 seizure_mode = true;
                 System.out.println("Youre having a seizure!!");
-                SmsManager.getDefault().sendTextMessage("5197023759", null, "Adam is having a seizure! Call him now!", null,null);
+
+                SmsManager.getDefault().sendTextMessage("5197025293", null, "Adam is having a seizure! Call him now!", null,null);
+
+            }
+
                 // if seizure mode is detected as true, send the text message to list of emergency contacts
                 // finish reading data
-            }
+
 
             timer.schedule(new dataAnalysis(), 1000);
 
@@ -342,6 +350,8 @@ public class ConnectionsFragment extends Fragment implements View.OnClickListene
         connectionListener = new ConnectionListener(weakActivity);
         dataListener = new DataListener(weakActivity);
         timer.schedule(new dataAnalysis(),1000);
+        dBAdapter = new DBAdapter(this.getActivity());
+
     }
 
     @Nullable

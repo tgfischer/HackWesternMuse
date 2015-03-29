@@ -25,7 +25,6 @@ import android.widget.TextView;
 public class MainActivity extends ActionBarActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
 
-    EmergencyContactContract.EmergencyContactEntry.EmergencyContactDbHelper eContactDbHelper = new EmergencyContactContract.EmergencyContactEntry.EmergencyContactDbHelper(this);
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
      */
@@ -159,7 +158,7 @@ public class MainActivity extends ActionBarActivity
     }
 
     public void onAddContactClicked (View v) {
-        if (v.getId() == R.id.addContactButton) {
+        /*if (v.getId() == R.id.addContactButton) {
             System.out.println("Add Contact Clicked!");
             EditText name = (EditText) findViewById(R.id.contactNameInput);
             EditText phone = (EditText) findViewById(R.id.contactPhoneInput);
@@ -178,7 +177,7 @@ public class MainActivity extends ActionBarActivity
                     null, values);
 
             System.out.println("Successfully added to the database!");
-        }
+        }*/
     }
 
 }

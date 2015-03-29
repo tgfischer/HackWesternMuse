@@ -1,7 +1,6 @@
 package com.fischer.tom.hackwesternmuse;
 
-import android.content.ContentValues;
-import android.database.sqlite.SQLiteDatabase;
+import android.database.Cursor;
 import android.graphics.Color;
 import android.support.v7.app.ActionBarActivity;
 import android.app.Activity;
@@ -20,6 +19,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -33,6 +33,7 @@ import android.content.DialogInterface;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Toast;
 
 /**
@@ -42,7 +43,7 @@ import android.widget.Toast;
  */
 public class NavigationDrawerFragment extends Fragment implements View.OnClickListener {
 
-    EmergencyContactContract.EmergencyContactEntry.EmergencyContactDbHelper eContactDbHelper = new EmergencyContactContract.EmergencyContactEntry.EmergencyContactDbHelper(this.getActivity());
+    private DBAdapter dBAdapter;
     private int numOfContacts = 0;
     private int count = 0;
 
@@ -116,20 +117,99 @@ public class NavigationDrawerFragment extends Fragment implements View.OnClickLi
         EditText contactPhoneInput = (EditText)mDrawerListView.findViewById(R.id.contactPhoneInput);
         contactPhoneInput.setHintTextColor(Color.parseColor("#ffc8c8c8"));
 
+        dBAdapter = new DBAdapter(getActivity());
+        dBAdapter.open();
+        populateContactList();
+
         return mDrawerListView;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        dBAdapter.close();
     }
 
     @Override
     public void onClick(View v) {
         //do what you want to do when button is clicked
         if (v.getId() == R.id.addContactButton) {
-            addContact();
+            //addContact();
+            //addNewContact();
+
+            String name = ((EditText)getView().findViewById(R.id.contactNameInput)).getText().toString();
+            String phoneString = ((EditText)getView().findViewById(R.id.contactPhoneInput)).getText().toString();
+            //clear text fields
+            ((EditText) getView().findViewById(R.id.contactNameInput)).setText("");
+            ((EditText) getView().findViewById(R.id.contactPhoneInput)).setText("");
+            try
+            {
+                dBAdapter.insertRow(name, Long.parseLong(phoneString));
+                populateContactList();
+            }
+            catch (NumberFormatException e)
+            {
+                new AlertDialog.Builder(this.getActivity())
+                        .setTitle("Invalid Entry")
+                        .setMessage(e.getMessage())
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                // continue on OK
+                            }
+                        })
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .show();
+            }
         } else {
             //delete contact from database based on ID = v.getId()... (0, 1, 2...) numOfContacts
 
-            GridLayout contactLayout = (GridLayout) getView().findViewById(R.id.grid);
-            contactLayout.removeView((View) v.getParent());
+            //GridLayout contactLayout = (GridLayout) getView().findViewById(R.id.grid);
+            //contactLayout.removeView((View) v.getParent());
         }
+    }
+
+    public void populateContactList() {
+        Cursor cursor = dBAdapter.getAllRows();
+        //startManagingCursor(cursor);
+
+        String[] fromFieldNames = new String[]{DBAdapter.KEY_NAME, DBAdapter.KEY_PHONE};
+        int[] toViewIDs = new int[]{R.id.contactName, R.id.contactPhone};
+
+        SimpleCursorAdapter cursorAdapter = new SimpleCursorAdapter(getActivity(), R.layout.contacts, cursor, fromFieldNames, toViewIDs);
+
+        ListView listView = (ListView)mDrawerListView.findViewById(R.id.contactsListView);
+        listView.setAdapter(cursorAdapter);
+
+        listView.setOnItemClickListener(new OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, final long id) {
+                //long deleteid = parent.getItemAtPosition(position);
+
+                new AlertDialog.Builder(getActivity())
+                        .setTitle("Delete Contact")
+                        .setMessage("Would you like to delete this contact?")
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                dBAdapter.deleteRow(id);
+
+                                populateContactList();
+                                Toast.makeText(getActivity(), "Emergency Contact Deleted", Toast.LENGTH_LONG).show();
+                            }
+                        })
+                        .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+
+                            }
+                        })
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .show();
+
+            }
+        });
+    }
+
+    public void removeItem(View v) {
+
     }
 
     public void addContact(){ //pass in object from database?
@@ -169,30 +249,10 @@ public class NavigationDrawerFragment extends Fragment implements View.OnClickLi
             invalidInput();
             return;
         }
-        /* Add to the database!! */
-        EditText name = (EditText) getView().findViewById(R.id.contactNameInput);
-        EditText phone = (EditText) getView().findViewById(R.id.contactPhoneInput);
 
-        String name_str = name.getText().toString();
-        String phone_str = phone.getText().toString();
-
-        SQLiteDatabase db = eContactDbHelper.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put(EmergencyContactContract.EmergencyContactEntry.COLUMN_NAME_CONTACT_NAME, name_str);
-        values.put(EmergencyContactContract.EmergencyContactEntry.COLUMN_NAME_CONTACT_PHONE, phone_str);
-        values.put(EmergencyContactContract.EmergencyContactEntry.COLUMN_NAME_DELETE_ID, numOfContacts);
-
-        long newRowId;
-        newRowId = db.insert(
-                EmergencyContactContract.EmergencyContactEntry.TABLE_NAME,
-                null, values);
-
-        System.out.println("Successfully added to the database!");
         //clear text fields
         ((EditText) getView().findViewById(R.id.contactNameInput)).setText("");
         ((EditText) getView().findViewById(R.id.contactPhoneInput)).setText("");
-        /* end entering data into db */
-
 
         // Defining the layout parameters of the TextView
         RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
@@ -220,10 +280,10 @@ public class NavigationDrawerFragment extends Fragment implements View.OnClickLi
         button.setOnClickListener(this);
 
         // Setting the RelativeLayout as our content view
-        GridLayout contactLayout = (GridLayout)getView().findViewById(R.id.grid);
-        contactLayout.addView(tv1, first);
-        contactLayout.addView(button, second);
-        contactLayout.addView(tv2);
+        //GridLayout contactLayout = (GridLayout)getView().findViewById(R.id.grid);
+        //contactLayout.addView(tv1, first);
+        //contactLayout.addView(button, second);
+        //contactLayout.addView(tv2);
 
         numOfContacts++; //for delete button ID
         count += 2;
@@ -245,8 +305,8 @@ public class NavigationDrawerFragment extends Fragment implements View.OnClickLi
 
     public void clearLayout(){
 
-        GridLayout lay = (GridLayout)getView().findViewById(R.id.grid);
-        lay.removeAllViews();
+        //GridLayout lay = (GridLayout)getView().findViewById(R.id.grid);
+        //lay.removeAllViews();
         numOfContacts = 0;
     }
 
