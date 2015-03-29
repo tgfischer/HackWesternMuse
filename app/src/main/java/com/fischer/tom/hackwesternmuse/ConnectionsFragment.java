@@ -32,6 +32,7 @@ import com.interaxon.libmuse.MuseVersion;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
+import java.io.IOException;
 
 /**
  * Created by Tom on 2015-03-28.
@@ -146,18 +147,29 @@ public class ConnectionsFragment extends Fragment implements View.OnClickListene
         private void updateEeg(final ArrayList<Double> data) {
             getView().post(new Runnable() {
                 public void run() {
-                    TextView tp9 = (TextView) getView().findViewById(R.id.eeg_tp9);
-                    TextView fp1 = (TextView) getView().findViewById(R.id.eeg_fp1);
-                    TextView fp2 = (TextView) getView().findViewById(R.id.eeg_fp2);
-                    TextView tp10 = (TextView) getView().findViewById(R.id.eeg_tp10);
-                    tp9.setText(String.format(
-                            "%6.2f", data.get(Eeg.TP9.ordinal())));
-                    fp1.setText(String.format(
-                            "%6.2f", data.get(Eeg.FP1.ordinal())));
-                    fp2.setText(String.format(
-                            "%6.2f", data.get(Eeg.FP2.ordinal())));
-                    tp10.setText(String.format(
-                            "%6.2f", data.get(Eeg.TP10.ordinal())));
+                    //if (!Thread.currentThread().isInterrupted()) {
+                    try {
+                        if (Thread.currentThread().isInterrupted()) {
+                            throw new InterruptedException();
+                        }
+
+                        TextView tp9 = (TextView) getView().findViewById(R.id.eeg_tp9);
+                        TextView fp1 = (TextView) getView().findViewById(R.id.eeg_fp1);
+                        TextView fp2 = (TextView) getView().findViewById(R.id.eeg_fp2);
+                        TextView tp10 = (TextView) getView().findViewById(R.id.eeg_tp10);
+                        tp9.setText(String.format(
+                                "%6.2f", data.get(Eeg.TP9.ordinal())));
+                        fp1.setText(String.format(
+                                "%6.2f", data.get(Eeg.FP1.ordinal())));
+                        fp2.setText(String.format(
+                                "%6.2f", data.get(Eeg.FP2.ordinal())));
+                        tp10.setText(String.format(
+                                "%6.2f", data.get(Eeg.TP10.ordinal())));
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        return;
+                    }
+                    //}
                 }
             });
         }

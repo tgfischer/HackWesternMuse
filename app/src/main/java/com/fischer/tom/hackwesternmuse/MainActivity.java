@@ -49,7 +49,7 @@ public class MainActivity extends ActionBarActivity
 
     @Override
     public void onNavigationDrawerItemSelected(int position) {
-        Fragment fragment = null;
+        Fragment fragment = new ConnectionsFragment();
 
         switch (position) {
             case 0:

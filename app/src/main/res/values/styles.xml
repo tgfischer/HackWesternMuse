@@ -5,6 +5,10 @@
         <!-- Customize your theme here. -->
         <item name="android:textViewStyle">@style/RobotoTextViewStyle</item>
         <item name="android:buttonStyle">@style/RobotoButtonStyle</item>
+        <item name="android:buttonStyleSmall">@style/RobotoButtonStyle</item>
+        <item name="colorControlNormal">#BDBDBD</item>
+        <item name="colorControlActivated">#E0E0E0</item>
+        <item name="colorControlHighlight">#E0E0E0</item>
     </style>
 
     <style name="RobotoTextViewStyle" parent="android:Widget.TextView">
