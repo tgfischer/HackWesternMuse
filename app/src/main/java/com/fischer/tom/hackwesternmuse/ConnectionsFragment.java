@@ -144,7 +144,7 @@ public class ConnectionsFragment extends Fragment implements View.OnClickListene
                 System.out.println("caution tp10: " + tp10_stdDev);
             }
 
-            if (tp9_stdDev > 300.0 || fp1_stdDev > 300.0 || fp2_stdDev > 300.0 || tp10_stdDev > 300.0) {
+            if (tp9_stdDev > 1000.0 || fp1_stdDev > 1000.0 || fp2_stdDev > 1000.0 || tp10_stdDev > 1000.0) {
                 // our testing threshold is 50
                 caution_mode = false;
                 seizure_mode = true;
@@ -171,6 +171,14 @@ public class ConnectionsFragment extends Fragment implements View.OnClickListene
                 }
 
                 cursor.close();
+
+                try {
+                    System.out.println("GOING TO SLEEP!");
+                    Thread.sleep(300000);
+                    System.out.println("WAKING UP FROM SLEEP!");
+                } catch (InterruptedException e) {
+
+                }
             }
 
                 // if seizure mode is detected as true, send the text message to list of emergency contacts
