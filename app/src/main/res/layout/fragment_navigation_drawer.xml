@@ -31,20 +31,57 @@
         android:layout_gravity="right"
         android:layout_marginBottom="20dp" />
 
-    <LinearLayout
-        android:orientation="horizontal"
+    <ListView
         android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/contactsListView" />
+
+    <!--<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content">
 
-    </LinearLayout>
+        <RelativeLayout
+            android:id="@+id/relativeLayoutLeft"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:padding="5dip">
+            <TextView
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:layout_height="wrap_content"
+                android:text="TextView"
+                android:layout_width="wrap_content"
+                android:id="@+id/BigText"
+                android:layout_marginLeft="2dip">
+            </TextView>
+            <TextView
+                android:layout_height="wrap_content"
+                android:text="TextView"
+                android:layout_width="wrap_content"
+                android:id="@+id/SmallText"
+                android:layout_below="@+id/BigText"
+                android:layout_marginLeft="2dip">
+            </TextView>
+            <ImageView
+                android:layout_width="50dip"
+                android:layout_height="50dip"
+                android:id="@+id/Icon"
+                android:src="@drawable/remove"
+                android:layout_alignParentRight="true"
+                android:scaleType="center">
+            </ImageView>
+        </RelativeLayout>
+    </LinearLayout>-->
 
-    <GridLayout
+
+
+    <!--<GridLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:columnCount="2"
         android:id="@+id/grid">
 
-        <!--<TextView
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"
@@ -73,8 +110,8 @@
             android:layout_row="0"
             android:layout_column="1"
             android:layout_rowSpan="2"
-            android:layout_gravity="right|top" />-->
-    </GridLayout>
+            android:layout_gravity="right|top" />
+    </GridLayout>-->
 
 </LinearLayout>
 
