@@ -19,4 +19,12 @@ public class ContactsFragment extends Fragment {
         rootView = inflater.inflate(R.layout.contacts_fragment, container, false);
         return rootView;
     }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+
+
+    }
 }
