@@ -152,17 +152,21 @@ public class ConnectionsFragment extends Fragment implements View.OnClickListene
 
                 Cursor cursor = dBAdapter.getAllRows();
 
-                /*String[] fromFieldNames = new String[]{DBAdapter.KEY_NAME, DBAdapter.KEY_PHONE};
-                int[] toViewIDs = new int[]{R.id.contactName, R.id.contactPhone};
-
-                SimpleCursorAdapter cursorAdapter = new SimpleCursorAdapter(getActivity(), R.layout.contacts, cursor, fromFieldNames, toViewIDs);*/
-
                 if (cursor.moveToFirst()) {
                     for (int i = 0; cursor.isAfterLast() == false; i++) {
-                        String phone = cursor.getString(0);
+                        String phone = cursor.getString(2);
                         String name = cursor.getString(1);
 
-                        SmsManager.getDefault().sendTextMessage(phone, null, name, null,null);
+                        try {
+                            SmsManager.getDefault().sendTextMessage(phone, null, "I'm having a seizure!", null, null);
+                            Log.d("PhoneNo", phone);
+                            Log.d("PhoneNo", name);
+                            Thread.sleep(3000);
+                        } catch (Exception e) {
+                            Log.d("PhoneNo", "Could not send to phone number");
+                        }
+
+                        cursor.moveToNext();
                     }
                 }
 
