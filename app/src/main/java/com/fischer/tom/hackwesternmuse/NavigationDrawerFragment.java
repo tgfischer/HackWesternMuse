@@ -1,5 +1,7 @@
 package com.fischer.tom.hackwesternmuse;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.support.v7.app.ActionBarActivity;
 import android.app.Activity;
 import android.support.v7.app.ActionBar;
@@ -17,11 +19,15 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.GridLayout;
 import android.widget.LinearLayout;
 import android.widget.Button;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 /**
@@ -31,6 +37,7 @@ import android.widget.Toast;
  */
 public class NavigationDrawerFragment extends Fragment implements View.OnClickListener {
 
+    private int numOfContacts = 0;
     /**
      * Remember the position of the selected item.
      */
@@ -95,6 +102,7 @@ public class NavigationDrawerFragment extends Fragment implements View.OnClickLi
 
         Button addContact = (Button)mDrawerListView.findViewById(R.id.addContactButton);
         addContact.setOnClickListener(this);
+
         return mDrawerListView;
     }
 
@@ -102,9 +110,95 @@ public class NavigationDrawerFragment extends Fragment implements View.OnClickLi
     public void onClick(View v) {
         //do what you want to do when button is clicked
         if (v.getId() == R.id.addContactButton) {
+            //insert data into db
+            //retrieve all data in alpha order
+            //loop through array of data
+            addContact();
+        }
+        else {
+            //delete contact from database based on ID = v.getId()... (0, 1, 2...) numOfContacts
 
+            GridLayout contactLayout = (GridLayout) getView().findViewById(R.id.grid);
+            contactLayout.removeView((View) v.getParent());
         }
     }
+
+    public void addContact(){ //pass in object from database?
+
+        RelativeLayout relativeLayout = new RelativeLayout(this.getActivity());
+        relativeLayout.setId(numOfContacts);
+        TextView tv = new TextView(this.getActivity());
+        Button button = new Button(this.getActivity());
+        button.setText("Delete");
+
+        tv.setText(((EditText)getView().findViewById(R.id.contactNameInput)).getText() + ":  " + (((EditText)getView().findViewById(R.id.contactPhoneInput)).getText()));
+        tv.setTextAppearance(this.getActivity(), android.R.style.TextAppearance_Large);
+
+        if(((EditText)getView().findViewById(R.id.contactNameInput)).getText().toString().matches("") ||
+                ((EditText)getView().findViewById(R.id.contactPhoneInput)).getText().toString().matches("")){
+            invalidInput();
+            return;
+        }
+        else if(((EditText)getView().findViewById(R.id.contactPhoneInput)).getText().toString().length() < 10 ){
+            //|| ((EditText)findViewById(R.id.contactPhoneInput)).getText().toString().length() > 8
+            invalidInput();
+            return;
+        }
+
+        //clear text fields
+        ((EditText) getView().findViewById(R.id.contactNameInput)).setText("");
+        ((EditText) getView().findViewById(R.id.contactPhoneInput)).setText("");
+
+        // Defining the layout parameters of the TextView
+        RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(
+                RelativeLayout.LayoutParams.WRAP_CONTENT,
+                RelativeLayout.LayoutParams.WRAP_CONTENT);
+        lp.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+        lp.addRule(RelativeLayout.CENTER_IN_PARENT);
+
+        RelativeLayout.LayoutParams lp2 = new RelativeLayout.LayoutParams(
+                RelativeLayout.LayoutParams.WRAP_CONTENT,
+                RelativeLayout.LayoutParams.WRAP_CONTENT);
+        lp2.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+
+        // Setting the parameters on the TextView
+        tv.setLayoutParams(lp);
+        button.setLayoutParams(lp2);
+        button.setId(numOfContacts);
+        button.setOnClickListener(this);
+
+        // Adding the TextView to the RelativeLayout as a child
+        relativeLayout.addView(tv);
+        relativeLayout.addView(button);
+
+        // Setting the RelativeLayout as our content view
+        GridLayout contactLayout = (GridLayout)getView().findViewById(R.id.grid);
+        contactLayout.addView(relativeLayout);
+
+        numOfContacts++; //for delete button ID
+    }
+
+    public void invalidInput(){
+
+        new AlertDialog.Builder(this.getActivity())
+                .setTitle("Invalid Entry")
+                .setMessage("Your contact will not be saved.")
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        // continue on OK
+                    }
+                })
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .show();
+    }
+
+    public void clearLayout(){
+
+        GridLayout lay = (GridLayout)getView().findViewById(R.id.grid);
+        lay.removeAllViews();
+        numOfContacts = 0;
+    }
+
 
     public boolean isDrawerOpen() {
         return mDrawerLayout != null && mDrawerLayout.isDrawerOpen(mFragmentContainerView);

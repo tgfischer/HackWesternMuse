@@ -41,38 +41,39 @@
     <GridLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:columnCount="2">
+        android:columnCount="2"
+        android:id="@+id/grid">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="Tom Fischer"
-            android:id="@+id/contactName1"
-            android:textColor="#ffffffff"
-            android:layout_row="0"
-            android:layout_column="0" />
+        <!--<TextView-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:textAppearance="?android:attr/textAppearanceLarge"-->
+            <!--android:text="Tom Fischer"-->
+            <!--android:id="@+id/contactName1"-->
+            <!--android:textColor="#ffffffff"-->
+            <!--android:layout_row="0"-->
+            <!--android:layout_column="0" />-->
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="519-357-8741"
-            android:id="@+id/contactNumber1"
-            android:textColor="#ffc8c8c8"
+        <!--<TextView-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:textAppearance="?android:attr/textAppearanceMedium"-->
+            <!--android:text="519-357-8741"-->
+            <!--android:id="@+id/contactNumber1"-->
+            <!--android:textColor="#ffc8c8c8"-->
 
-            android:layout_row="1"
-            android:layout_column="0" />
+            <!--android:layout_row="1"-->
+            <!--android:layout_column="0" />-->
 
-        <Button
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:text="X"
-            android:id="@+id/xButton1"
-            android:layout_row="0"
-            android:layout_column="1"
-            android:layout_rowSpan="2"
-            android:layout_gravity="right|top" />
+        <!--<Button-->
+            <!--android:layout_width="50dp"-->
+            <!--android:layout_height="50dp"-->
+            <!--android:text="X"-->
+            <!--android:id="@+id/xButton1"-->
+            <!--android:layout_row="0"-->
+            <!--android:layout_column="1"-->
+            <!--android:layout_rowSpan="2"-->
+            <!--android:layout_gravity="right|top" />-->
     </GridLayout>
 
 </LinearLayout>
