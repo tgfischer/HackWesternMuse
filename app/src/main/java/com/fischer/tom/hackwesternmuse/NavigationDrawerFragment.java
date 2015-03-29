@@ -119,6 +119,7 @@ public class NavigationDrawerFragment extends Fragment implements View.OnClickLi
 
         dBAdapter = new DBAdapter(getActivity());
         dBAdapter.open();
+
         populateContactList();
 
         return mDrawerListView;

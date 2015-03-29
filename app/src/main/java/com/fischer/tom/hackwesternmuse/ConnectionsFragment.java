@@ -19,6 +19,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -147,10 +148,25 @@ public class ConnectionsFragment extends Fragment implements View.OnClickListene
                 // our testing threshold is 50
                 caution_mode = false;
                 seizure_mode = true;
-                System.out.println("Youre having a seizure!!");
+                //System.out.println("Youre having a seizure!!");
 
-                SmsManager.getDefault().sendTextMessage("5197025293", null, "Adam is having a seizure! Call him now!", null,null);
+                Cursor cursor = dBAdapter.getAllRows();
 
+                /*String[] fromFieldNames = new String[]{DBAdapter.KEY_NAME, DBAdapter.KEY_PHONE};
+                int[] toViewIDs = new int[]{R.id.contactName, R.id.contactPhone};
+
+                SimpleCursorAdapter cursorAdapter = new SimpleCursorAdapter(getActivity(), R.layout.contacts, cursor, fromFieldNames, toViewIDs);*/
+
+                if (cursor.moveToFirst()) {
+                    for (int i = 0; cursor.isAfterLast() == false; i++) {
+                        String phone = cursor.getString(0);
+                        String name = cursor.getString(1);
+
+                        SmsManager.getDefault().sendTextMessage(phone, null, name, null,null);
+                    }
+                }
+
+                cursor.close();
             }
 
                 // if seizure mode is detected as true, send the text message to list of emergency contacts
