@@ -1,5 +1,7 @@
 package com.fischer.tom.hackwesternmuse;
 
+import android.accounts.AccountManager;
+import android.accounts.Account;
 import android.telephony.SmsManager;
 
 import android.app.Activity;
@@ -52,6 +54,7 @@ public class ConnectionsFragment extends Fragment implements View.OnClickListene
     Timer timer = new Timer();
     Boolean caution_mode = false;
     Boolean seizure_mode = false;
+    AccountManager accountManager;
 
     class dataAnalysis extends TimerTask {
         public void run() {
@@ -122,8 +125,8 @@ public class ConnectionsFragment extends Fragment implements View.OnClickListene
                 // our testing threshold is 50
                 caution_mode = false;
                 seizure_mode = true;
-                System.out.println("YOURE HAVING A SEIZURE");
-                SmsManager.getDefault().sendTextMessage("5193578741", null, "Lin is having a seizure! Call him now!", null,null);
+
+                SmsManager.getDefault().sendTextMessage("5193578741", null, " is having a seizure! Call him now!", null,null);
                 // if seizure mode is detected as true, send the text message to list of emergency contacts
                 // finish reading data
             }
@@ -356,6 +359,11 @@ public class ConnectionsFragment extends Fragment implements View.OnClickListene
         disconnectButton.setOnClickListener(this);
         Button pauseButton = (Button) getView().findViewById(R.id.pause);
         pauseButton.setOnClickListener(this);
+
+        //accountManager = AccountManager.get(getActivity());
+        //Account[] accounts = accountManager.getAccounts();
+
+
     }
 
     @Override
