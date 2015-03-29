@@ -350,14 +350,16 @@ public class ConnectionsFragment extends Fragment implements View.OnClickListene
         connectionListener = new ConnectionListener(weakActivity);
         dataListener = new DataListener(weakActivity);
         timer.schedule(new dataAnalysis(),1000);
-        dBAdapter = new DBAdapter(this.getActivity());
-
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.connections_fragment, container, false);
+
+        dBAdapter = new DBAdapter(this.getActivity());
+        dBAdapter.open();
+
         return rootView;
     }
 

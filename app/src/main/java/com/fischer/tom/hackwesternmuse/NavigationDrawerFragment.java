@@ -142,24 +142,9 @@ public class NavigationDrawerFragment extends Fragment implements View.OnClickLi
             //clear text fields
             ((EditText) getView().findViewById(R.id.contactNameInput)).setText("");
             ((EditText) getView().findViewById(R.id.contactPhoneInput)).setText("");
-            try
-            {
-                dBAdapter.insertRow(name, Long.parseLong(phoneString));
-                populateContactList();
-            }
-            catch (NumberFormatException e)
-            {
-                new AlertDialog.Builder(this.getActivity())
-                        .setTitle("Invalid Entry")
-                        .setMessage(e.getMessage())
-                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                // continue on OK
-                            }
-                        })
-                        .setIcon(android.R.drawable.ic_dialog_alert)
-                        .show();
-            }
+
+            dBAdapter.insertRow(name, phoneString);
+            populateContactList();
         } else {
             //delete contact from database based on ID = v.getId()... (0, 1, 2...) numOfContacts
 
