@@ -12,6 +12,10 @@ import android.support.v4.widget.DrawerLayout;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
+import android.util.TypedValue;
+import android.view.Gravity;
+import android.widget.GridLayout.Spec;
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -39,6 +43,7 @@ import android.widget.Toast;
 public class NavigationDrawerFragment extends Fragment implements View.OnClickListener {
 
     private int numOfContacts = 0;
+    private int count = 0;
     /**
      * Remember the position of the selected item.
      */
@@ -126,16 +131,30 @@ public class NavigationDrawerFragment extends Fragment implements View.OnClickLi
 
     public void addContact(){ //pass in object from database?
 
-        RelativeLayout relativeLayout = new RelativeLayout(this.getActivity());
-        relativeLayout.setId(numOfContacts);
+        //RelativeLayout relativeLayout = new RelativeLayout(this.getActivity());
+        //relativeLayout.setId(numOfContacts);
         TextView tv1 = new TextView(this.getActivity());
+        TextView tv2 = new TextView(this.getActivity());
         Button button = new Button(this.getActivity());
-        button.setText("Delete");
+        button.setText("X");
 
         tv1.setText(((EditText)getView().findViewById(R.id.contactNameInput)).getText());
         tv1.setTextAppearance(this.getActivity(), android.R.style.TextAppearance_Large);
         tv1.setTextColor(Color.parseColor("#FFFFFF"));
-        tv1.setLayoutParams(new GridLayout.LayoutParams());
+
+        tv2.setText(((EditText)getView().findViewById(R.id.contactPhoneInput)).getText());
+        tv2.setTextAppearance(this.getActivity(), android.R.style.TextAppearance_Medium);
+        tv2.setTextColor(Color.parseColor("#FFC8C8C8"));
+
+        Spec row10 = GridLayout.spec(count);
+        Spec row11 = GridLayout.spec(count,2);
+
+        Spec col1 = GridLayout.spec(0);
+        Spec col2 = GridLayout.spec(1);
+
+        GridLayout.LayoutParams first = new GridLayout.LayoutParams(row10, col1);
+        GridLayout.LayoutParams second = new GridLayout.LayoutParams(row11, col2);
+
 
         if(((EditText)getView().findViewById(R.id.contactNameInput)).getText().toString().matches("") ||
                 ((EditText)getView().findViewById(R.id.contactPhoneInput)).getText().toString().matches("")){
@@ -159,26 +178,35 @@ public class NavigationDrawerFragment extends Fragment implements View.OnClickLi
         lp.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
         lp.addRule(RelativeLayout.CENTER_IN_PARENT);
 
-        RelativeLayout.LayoutParams lp2 = new RelativeLayout.LayoutParams(
+//        RelativeLayout.LayoutParams lp2 = new RelativeLayout.LayoutParams(
+//                RelativeLayout.LayoutParams.WRAP_CONTENT,
+//                RelativeLayout.LayoutParams.WRAP_CONTENT);
+//        lp2.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+
+//        DisplayMetrics dm = getResources().getDisplayMetrics();
+//        float x = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 50, dm);
+
+        RelativeLayout.LayoutParams lp3 = new RelativeLayout.LayoutParams(
                 RelativeLayout.LayoutParams.WRAP_CONTENT,
                 RelativeLayout.LayoutParams.WRAP_CONTENT);
-        lp2.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+        lp3.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+        //lp3.addRule();
 
         // Setting the parameters on the TextView
         tv1.setLayoutParams(lp);
-        button.setLayoutParams(lp2);
+        tv2.setLayoutParams(lp);
+        button.setLayoutParams(lp3);
         button.setId(numOfContacts);
         button.setOnClickListener(this);
 
-        // Adding the TextView to the RelativeLayout as a child
-        relativeLayout.addView(tv1);
-        relativeLayout.addView(button);
-
         // Setting the RelativeLayout as our content view
         GridLayout contactLayout = (GridLayout)getView().findViewById(R.id.grid);
-        contactLayout.addView(relativeLayout);
+        contactLayout.addView(tv1, first);
+        contactLayout.addView(button, second);
+        contactLayout.addView(tv2);
 
         numOfContacts++; //for delete button ID
+        count += 2;
     }
 
     public void invalidInput(){
