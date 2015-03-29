@@ -18,6 +18,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.graphics.Color;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.GridLayout;
@@ -127,12 +128,14 @@ public class NavigationDrawerFragment extends Fragment implements View.OnClickLi
 
         RelativeLayout relativeLayout = new RelativeLayout(this.getActivity());
         relativeLayout.setId(numOfContacts);
-        TextView tv = new TextView(this.getActivity());
+        TextView tv1 = new TextView(this.getActivity());
         Button button = new Button(this.getActivity());
         button.setText("Delete");
 
-        tv.setText(((EditText)getView().findViewById(R.id.contactNameInput)).getText() + ":  " + (((EditText)getView().findViewById(R.id.contactPhoneInput)).getText()));
-        tv.setTextAppearance(this.getActivity(), android.R.style.TextAppearance_Large);
+        tv1.setText(((EditText)getView().findViewById(R.id.contactNameInput)).getText());
+        tv1.setTextAppearance(this.getActivity(), android.R.style.TextAppearance_Large);
+        tv1.setTextColor(Color.parseColor("#FFFFFF"));
+        tv1.setLayoutParams(new GridLayout.LayoutParams());
 
         if(((EditText)getView().findViewById(R.id.contactNameInput)).getText().toString().matches("") ||
                 ((EditText)getView().findViewById(R.id.contactPhoneInput)).getText().toString().matches("")){
@@ -162,13 +165,13 @@ public class NavigationDrawerFragment extends Fragment implements View.OnClickLi
         lp2.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
 
         // Setting the parameters on the TextView
-        tv.setLayoutParams(lp);
+        tv1.setLayoutParams(lp);
         button.setLayoutParams(lp2);
         button.setId(numOfContacts);
         button.setOnClickListener(this);
 
         // Adding the TextView to the RelativeLayout as a child
-        relativeLayout.addView(tv);
+        relativeLayout.addView(tv1);
         relativeLayout.addView(button);
 
         // Setting the RelativeLayout as our content view
