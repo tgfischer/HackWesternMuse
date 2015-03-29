@@ -1,6 +1,8 @@
 package com.fischer.tom.hackwesternmuse;
 
 import android.app.Activity;
+import android.content.ContentValues;
+import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
@@ -16,12 +18,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.TextView;
 
 
 public class MainActivity extends ActionBarActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
 
+    EmergencyContactContract.EmergencyContactEntry.EmergencyContactDbHelper eContactDbHelper = new EmergencyContactContract.EmergencyContactEntry.EmergencyContactDbHelper(this);
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
      */
@@ -49,7 +53,7 @@ public class MainActivity extends ActionBarActivity
 
     @Override
     public void onNavigationDrawerItemSelected(int position) {
-        Fragment fragment = null;
+        Fragment fragment = new ConnectionsFragment();
 
         switch (position) {
             case 0:
@@ -151,6 +155,29 @@ public class MainActivity extends ActionBarActivity
             super.onAttach(activity);
             ((MainActivity) activity).onSectionAttached(
                     getArguments().getInt(ARG_SECTION_NUMBER));
+        }
+    }
+
+    public void onAddContactClicked (View v) {
+        if (v.getId() == R.id.addContactButton) {
+            System.out.println("Add Contact Clicked!");
+            EditText name = (EditText) findViewById(R.id.contactNameInput);
+            EditText phone = (EditText) findViewById(R.id.contactPhoneInput);
+
+            String name_str = name.getText().toString();
+            String phone_str = phone.getText().toString();
+
+            SQLiteDatabase db = eContactDbHelper.getWritableDatabase();
+            ContentValues values = new ContentValues();
+            values.put(EmergencyContactContract.EmergencyContactEntry.COLUMN_NAME_CONTACT_NAME, name_str);
+            values.put(EmergencyContactContract.EmergencyContactEntry.COLUMN_NAME_CONTACT_PHONE, phone_str);
+
+            long newRowId;
+            newRowId = db.insert(
+                    EmergencyContactContract.EmergencyContactEntry.TABLE_NAME,
+                    null, values);
+
+            System.out.println("Successfully added to the database!");
         }
     }
 

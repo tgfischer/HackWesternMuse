@@ -1,5 +1,9 @@
 package com.fischer.tom.hackwesternmuse;
 
+import android.accounts.AccountManager;
+import android.accounts.Account;
+import android.telephony.SmsManager;
+
 import android.app.Activity;
 import android.graphics.Color;
 import android.support.v4.app.Fragment;
@@ -15,7 +19,6 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.telephony.SmsManager;
 
 import com.interaxon.libmuse.ConnectionState;
 import com.interaxon.libmuse.Eeg;
@@ -51,36 +54,51 @@ public class ConnectionsFragment extends Fragment implements View.OnClickListene
     Timer timer = new Timer();
     Boolean caution_mode = false;
     Boolean seizure_mode = false;
+    AccountManager accountManager;
 
     class dataAnalysis extends TimerTask {
         public void run() {
 
             double tp9_variance = computeVariance(tp9_dataHolder, tp9_avg);
             double tp9_stdDev = Math.sqrt(tp9_variance);
-            System.out.println("tp9: " + Math.sqrt(tp9_variance));
             tp9_dataHolder.clear();
 
             double fp1_variance = computeVariance(fp1_dataHolder, fp1_avg);
             double fp1_stdDev = Math.sqrt(fp1_variance);
-            System.out.println("fp1: " + Math.sqrt(fp1_variance));
             fp1_dataHolder.clear();
 
             double fp2_variance = computeVariance(fp2_dataHolder, fp2_avg);
             double fp2_stdDev = Math.sqrt(fp2_variance);
-            System.out.println("fp2: " + Math.sqrt(fp2_variance));
             fp2_dataHolder.clear();
 
             double tp10_variance = computeVariance(tp10_dataHolder, tp10_avg);
             double tp10_stdDev = Math.sqrt(tp10_variance);
-            System.out.println("tp10: " + Math.sqrt(tp10_variance));
             tp10_dataHolder.clear();
 
-            if (tp9_stdDev > 95.0 || fp1_stdDev > 95.0 || fp2_stdDev > 95.0 || tp10_stdDev > 95.0) {
+
+            if (tp9_stdDev > 0 || fp1_stdDev > 0 || fp2_stdDev > 0 || tp10_stdDev > 0) {
+                System.out.println("tp9: " + tp9_stdDev);
+                System.out.println("fp1: " + fp1_stdDev);
+                System.out.println("fp2: " + fp2_stdDev);
+                System.out.println("tp10: " + tp10_stdDev);
+            }
+
+            if(seizure_mode && (tp9_stdDev > 300.0 || fp1_stdDev > 300.0 || fp2_stdDev > 300.0 || tp10_stdDev > 300.0)) {
+                // we are experiencing the same seizure still
+                timer.schedule(new dataAnalysis(), 1000);
+            }
+            else if (seizure_mode) {
+                caution_mode = false;
+                seizure_mode = false;
+                timer.schedule(new dataAnalysis(), 1000);
+            }
+            else if (tp9_stdDev > 300.0 || fp1_stdDev > 300.0 || fp2_stdDev > 300.0 || tp10_stdDev > 300.0) {
                 // our testing threshold is 50
                 caution_mode = true;
                 timer.schedule(new cautionMode(), 5000);
             }
             else {
+                //normal mode
                 timer.schedule(new dataAnalysis(), 1000);
             }
 
@@ -91,7 +109,7 @@ public class ConnectionsFragment extends Fragment implements View.OnClickListene
             for (int i = 0; i < data.size(); i++) {
                 sumsq += ((average-data.get(i))*(average-data.get(i)));
             }
-            return sumsq/(data.size()-1);
+            return sumsq/(data.size());
         }
     }
 
@@ -99,30 +117,34 @@ public class ConnectionsFragment extends Fragment implements View.OnClickListene
         public void run() {
             double tp9_variance = computeVariance(tp9_dataHolder, tp9_avg);
             double tp9_stdDev = Math.sqrt(tp9_variance);
-            System.out.println("tp9: " + Math.sqrt(tp9_variance));
             tp9_dataHolder.clear();
 
             double fp1_variance = computeVariance(fp1_dataHolder, fp1_avg);
             double fp1_stdDev = Math.sqrt(fp1_variance);
-            System.out.println("fp1: " + Math.sqrt(fp1_variance));
             fp1_dataHolder.clear();
 
             double fp2_variance = computeVariance(fp2_dataHolder, fp2_avg);
             double fp2_stdDev = Math.sqrt(fp2_variance);
-            System.out.println("fp2: " + Math.sqrt(fp2_variance));
             fp2_dataHolder.clear();
 
             double tp10_variance = computeVariance(tp10_dataHolder, tp10_avg);
             double tp10_stdDev = Math.sqrt(tp10_variance);
-            System.out.println("tp10: " + Math.sqrt(tp10_variance));
             tp10_dataHolder.clear();
 
-            if (tp9_stdDev > 95.0 || fp1_stdDev > 95.0 || fp2_stdDev > 95.0 || tp10_stdDev > 95.0) {
+            if (tp9_stdDev > 0 || fp1_stdDev > 0 || fp2_stdDev > 0 || tp10_stdDev > 0) {
+                System.out.println("caution tp9: " + tp9_stdDev);
+                System.out.println("caution fp1: " + fp1_stdDev);
+                System.out.println("caution fp2: " + fp2_stdDev);
+                System.out.println("caution tp10: " + tp10_stdDev);
+            }
+
+
+            if (tp9_stdDev > 300.0 || fp1_stdDev > 300.0 || fp2_stdDev > 300.0 || tp10_stdDev > 300.0) {
                 // our testing threshold is 50
                 caution_mode = false;
                 seizure_mode = true;
-                System.out.println("YOURE HAVING A SEIZURE");
-                SmsManager.getDefault().sendTextMessage("2262354598", null, "Lin is having a seizure! Call him now!", null,null);
+                System.out.println("Youre having a seizure!!");
+                SmsManager.getDefault().sendTextMessage("5197023759", null, "Adam is having a seizure! Call him now!", null,null);
                 // if seizure mode is detected as true, send the text message to list of emergency contacts
                 // finish reading data
             }
@@ -136,7 +158,7 @@ public class ConnectionsFragment extends Fragment implements View.OnClickListene
             for (int i = 0; i < data.size(); i++) {
                 sumsq += ((average-data.get(i))*(average-data.get(i)));
             }
-            return sumsq/(data.size()-1);
+            return sumsq/(data.size());
         }
     }
 
@@ -248,46 +270,30 @@ public class ConnectionsFragment extends Fragment implements View.OnClickListene
         private void updateEeg(final ArrayList<Double> data) {
             getView().post(new Runnable() {
                 public void run() {
-                    //if (!Thread.currentThread().isInterrupted()) {
-                        samples++;
-                        //if (samples % 22 == 0) {
+                    samples++;
+                    //if (samples % 22 == 0) {
 
-                        TextView tp9 = (TextView) getView().findViewById(R.id.eeg_tp9);
-                        tp9_count += data.get(Eeg.TP9.ordinal());
-                        tp9_avg = tp9_count / samples;
-                        //System.out.println("AVG: " + tp9_avg + "");
-                        tp9_dataHolder.add(data.get(Eeg.TP9.ordinal()));
-
-                        TextView fp1 = (TextView) getView().findViewById(R.id.eeg_fp1);
-                        fp1_count += data.get(Eeg.FP1.ordinal());
-                        fp1_avg = fp1_count / samples;
-                        fp1_dataHolder.add(data.get(Eeg.FP1.ordinal()));
-
-                        TextView fp2 = (TextView) getView().findViewById(R.id.eeg_fp2);
-                        fp2_count += data.get(Eeg.FP2.ordinal());
-                        fp2_avg = fp2_count / samples;
-                        fp2_dataHolder.add(data.get(Eeg.FP2.ordinal()));
-
-                        TextView tp10 = (TextView) getView().findViewById(R.id.eeg_tp10);
-                        tp10_count += data.get(Eeg.TP10.ordinal());
-                        tp10_avg = tp10_count / samples;
-                        tp10_dataHolder.add(data.get(Eeg.TP10.ordinal()));
-
-                        tp9.setText(String.format(
-                                "%6.2f", data.get(Eeg.TP9.ordinal())));
-                        fp1.setText(String.format(
-                                "%6.2f", data.get(Eeg.FP1.ordinal())));
-                        fp2.setText(String.format(
-                                "%6.2f", data.get(Eeg.FP2.ordinal())));
-                        tp10.setText(String.format(
-                                "%6.2f", data.get(Eeg.TP10.ordinal())));
-                    //}
-
-                    /*
                     TextView tp9 = (TextView) getView().findViewById(R.id.eeg_tp9);
+                    tp9_count += data.get(Eeg.TP9.ordinal());
+                    tp9_avg = tp9_count / samples;
+                    //System.out.println("AVG: " + tp9_avg + "");
+                    tp9_dataHolder.add(data.get(Eeg.TP9.ordinal()));
+
                     TextView fp1 = (TextView) getView().findViewById(R.id.eeg_fp1);
+                    fp1_count += data.get(Eeg.FP1.ordinal());
+                    fp1_avg = fp1_count / samples;
+                    fp1_dataHolder.add(data.get(Eeg.FP1.ordinal()));
+
                     TextView fp2 = (TextView) getView().findViewById(R.id.eeg_fp2);
+                    fp2_count += data.get(Eeg.FP2.ordinal());
+                    fp2_avg = fp2_count / samples;
+                    fp2_dataHolder.add(data.get(Eeg.FP2.ordinal()));
+
                     TextView tp10 = (TextView) getView().findViewById(R.id.eeg_tp10);
+                    tp10_count += data.get(Eeg.TP10.ordinal());
+                    tp10_avg = tp10_count / samples;
+                    tp10_dataHolder.add(data.get(Eeg.TP10.ordinal()));
+
                     tp9.setText(String.format(
                             "%6.2f", data.get(Eeg.TP9.ordinal())));
                     fp1.setText(String.format(
@@ -296,7 +302,7 @@ public class ConnectionsFragment extends Fragment implements View.OnClickListene
                             "%6.2f", data.get(Eeg.FP2.ordinal())));
                     tp10.setText(String.format(
                             "%6.2f", data.get(Eeg.TP10.ordinal())));
-                    */
+
                 }
             });
         }
@@ -358,6 +364,11 @@ public class ConnectionsFragment extends Fragment implements View.OnClickListene
         disconnectButton.setOnClickListener(this);
         Button pauseButton = (Button) getView().findViewById(R.id.pause);
         pauseButton.setOnClickListener(this);
+
+        //accountManager = AccountManager.get(getActivity());
+        //Account[] accounts = accountManager.getAccounts();
+
+
     }
 
     @Override
