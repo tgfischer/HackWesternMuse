@@ -123,7 +123,7 @@ public class ConnectionsFragment extends Fragment implements View.OnClickListene
                 caution_mode = false;
                 seizure_mode = true;
                 System.out.println("YOURE HAVING A SEIZURE");
-                SmsManager.getDefault().sendTextMessage("2262354598", null, "Lin is having a seizure! Call him now!", null,null);
+                SmsManager.getDefault().sendTextMessage("5193578741", null, "Lin is having a seizure! Call him now!", null,null);
                 // if seizure mode is detected as true, send the text message to list of emergency contacts
                 // finish reading data
             }
